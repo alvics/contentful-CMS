@@ -1,27 +1,52 @@
-# ContentfulCMS
+# Angular and Contentful CMS/API
 
+## Connecting Contenful with Angular
+
+### Use contentful cms as the backend for an Angular project.
+
+Post component, service and markdown to HTML pipe.
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.1.5.
 
-## Development server
+### Add your spaceId and token in environment.ts
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+```
+  contentful: {
+    spaceId: 'your_Id',
+    token: 'your_token'
+  }
+};
+```
 
-## Code scaffolding
+### postsComponent.html
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```
+<!-- Comming from Contenful CMS/API -->
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+  <div class="container" *ngFor="let layout of layouts">
+    <div class="overlay">
+      <h1 class="pt-5">{{ layout.fields.title }}</h1>
+      <br>
+      <div id="contentful" [innerHTML]="layout.fields.body | mdToHtml">
+        <div class="space"></div>
+    </div>
+      </div>
+  </div>
+```
 
-## Running unit tests
+### contentful.service.ts
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+```
+  getContents(query?: object): Promise<Entry<any>[]> {
+    return this.client
+      .getEntries(
+        Object.assign(
+          {
+            content_type: 'layouts'
+          },
+          query
+        )
+      )
+      .then(res => res.items);
+  }
+```
